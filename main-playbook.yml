@@ -1,0 +1,62 @@
+- name: Create instance(s)
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    gcp_project: studentjamk
+    gcp_cred_kind: serviceaccount
+    gcp_cred_file: ~/secret/ansible-service-account.json
+    zone: "europe-north1-a"
+    gcp_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts
+  tasks:
+    - name: Launch database instance
+      gcp_compute_instance:
+        auth_kind: {{ gcp_cred_kind }}
+        service_account_file: {{ gcp_cred_file }}
+        name: ansible-mongo
+        machine_type: e2-small
+        zone: {{ zone }}
+        project: {{ gcp_project }}
+        disks:
+          - auto_delete: true
+            boot: true
+            initialize_params:
+              source_image: {{ gcp_image }}
+        network_interfaces:
+          - access_configs:
+            - name: External NAT
+              type: ONE_TO_ONE_NAT
+    - name: Launch frontend instance
+      gcp_compute_instance:
+        auth_kind: {{ gcp_cred_kind }}
+        service_account_file: {{ gcp_cred_file }}
+        name: ansible-frontend
+        machine_type: e2-small
+        zone: {{ zone }}
+        project: {{ gcp_project }}
+        disks:
+          - auto_delete: true
+            boot: true
+            initialize_params:
+              source_image: {{ gcp_image }}
+        network_interfaces:
+          - access_configs:
+            - name: External NAT
+              type: ONE_TO_ONE_NAT
+    - name: Launch backend instance
+      gcp_compute_instance:
+        auth_kind: {{ gcp_cred_kind }}
+        service_account_file: {{ gcp_cred_file }}
+        name: ansible-backend
+        machine_type: e2-small
+        zone: {{ zone }}
+        project: {{ gcp_project }}
+        disks:
+          - auto_delete: true
+            boot: true
+            initialize_params:
+              source_image: {{ gcp_image }}
+        network_interfaces:
+          - access_configs:
+            - name: External NAT
+              type: ONE_TO_ONE_NAT
