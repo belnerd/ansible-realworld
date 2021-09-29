@@ -1,0 +1,9 @@
+# roles/docker/tasks/main.yml
+- name: Install docker
+  become: yes
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
+    force_apt_get: true
+    name: docker
+    state: present

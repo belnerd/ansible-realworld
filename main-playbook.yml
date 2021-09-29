@@ -11,52 +11,78 @@
   tasks:
     - name: Launch database instance
       gcp_compute_instance:
-        auth_kind: {{ gcp_cred_kind }}
-        service_account_file: {{ gcp_cred_file }}
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
         name: ansible-mongo
         machine_type: e2-small
-        zone: {{ zone }}
-        project: {{ gcp_project }}
+        zone: "{{ zone }}"
+        project: "{{ gcp_project }}"
         disks:
           - auto_delete: true
             boot: true
             initialize_params:
-              source_image: {{ gcp_image }}
+              source_image: "{{ gcp_image }}"
         network_interfaces:
           - access_configs:
             - name: External NAT
               type: ONE_TO_ONE_NAT
+        state: present
     - name: Launch frontend instance
       gcp_compute_instance:
-        auth_kind: {{ gcp_cred_kind }}
-        service_account_file: {{ gcp_cred_file }}
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
         name: ansible-frontend
         machine_type: e2-small
-        zone: {{ zone }}
-        project: {{ gcp_project }}
+        zone: "{{ zone }}"
+        project: "{{ gcp_project }}"
         disks:
           - auto_delete: true
             boot: true
             initialize_params:
-              source_image: {{ gcp_image }}
+              source_image: "{{ gcp_image }}"
         network_interfaces:
           - access_configs:
             - name: External NAT
               type: ONE_TO_ONE_NAT
+        state: present
+        tags:
+          items:
+            - http-server
+            - https-server
     - name: Launch backend instance
       gcp_compute_instance:
-        auth_kind: {{ gcp_cred_kind }}
-        service_account_file: {{ gcp_cred_file }}
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
         name: ansible-backend
         machine_type: e2-small
-        zone: {{ zone }}
-        project: {{ gcp_project }}
+        zone: "{{ zone }}"
+        project: "{{ gcp_project }}"
         disks:
           - auto_delete: true
             boot: true
             initialize_params:
-              source_image: {{ gcp_image }}
+              source_image: "{{ gcp_image }}"
         network_interfaces:
           - access_configs:
             - name: External NAT
               type: ONE_TO_ONE_NAT
+        state: present
+        tags:
+          items:
+            - http-server
+            - https-server
+
+- name: Install docker to database server
+  hosts: _ansible_mongo
+  roles:
+  - docker
+
+- name: Install docker to frontend server
+  hosts: _ansible_frontend
+  roles:
+  - docker
+
+- name: Install docker to backend server
+  hosts: _ansible_backend
+  roles:
+  - docker

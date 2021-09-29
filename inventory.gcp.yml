@@ -1,0 +1,9 @@
+# inventory.gcp.yml
+plugin: gcp_compute
+projects:
+  # Change your project id here!
+  - studentjamk
+auth_kind: serviceaccount
+service_account_file: ~/secret/ansible-service-account.json
+keyed_groups:
+  - key: name
