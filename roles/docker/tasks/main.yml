@@ -1,9 +1,18 @@
 # roles/docker/tasks/main.yml
+- name: Install required system packages
+  become: yes
+  apt: name={{ item }} state=latest update_cache=yes
+  loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']
+
+- name: Add Docker GPG apt Key
+  become: yes
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
 - name: Install docker
   become: yes
+  become: yes
   apt:
-    update_cache: true
-    cache_valid_time: 3600
-    force_apt_get: true
-    name: docker
+    name: docker.io
     state: present
